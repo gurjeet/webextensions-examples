@@ -1,4 +1,13 @@
-const commandName = 'toggle-feature';
+const commandCount = 2;
+
+// TODO: Remove this unused variable
+const commandNames = (function(){
+  var ret = [];
+  for (var i = 1; i <= commandCount; ++i)
+    ret.push('Command ' + i);
+
+  return ret;
+})();
 
 /**
  * Update the UI: set the value of the shortcut textbox.
@@ -6,8 +15,13 @@ const commandName = 'toggle-feature';
 async function updateUI() {
   let commands = await browser.commands.getAll();
   for (command of commands) {
-    if (command.name === commandName) {
-      document.querySelector('#shortcut').value = command.shortcut;
+    for (var i = 1; i <= commandCount; ++i) {
+      var commandName = 'Command ' + i;
+      if (command.name === commandName) {
+        document.querySelector('#shortcut' + i).value = command.shortcut;
+        document.querySelector('#description' + i).value = command.description;
+        break;
+      }
     }
   }
 }
@@ -16,17 +30,24 @@ async function updateUI() {
  * Update the shortcut based on the value in the textbox.
  */
 async function updateShortcut() {
-  await browser.commands.update({
-    name: commandName,
-    shortcut: document.querySelector('#shortcut').value
-  });
+  for (var i = 1; i <= commandCount; ++i) {
+    var commandName = 'Command ' + i;
+    await browser.commands.update({
+      name: commandName,
+      shortcut: document.querySelector('#shortcut' + i).value,
+      description: document.querySelector('#description' + i).value
+    });
+  }
 }
 
 /**
  * Reset the shortcut and update the textbox.
  */
 async function resetShortcut() {
-  await browser.commands.reset(commandName);
+  for (var i = 1; i <= commandCount; ++i) {
+    var commandName = 'Command ' + i;
+    await browser.commands.reset(commandName);
+  }
   updateUI();
 }
 
